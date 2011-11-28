@@ -51,6 +51,9 @@ public class RConsoleLaunchDelegate extends AbstractRConsoleLaunchDelegate {
 				new RConsoleRJLaunchDelegate().launch(configuration, mode, launch, monitor);
 				return;
 			}
+			if (type.equals(RConsoleLaunching.RENJIN)) {
+				new RConsoleRenjinLaunchDelegate().launch(configuration, mode, launch, monitor);
+			}
 			throw new CoreException(new Status(IStatus.ERROR, RConsoleUIPlugin.PLUGIN_ID,
 					ICommonStatusConstants.LAUNCHCONFIG_ERROR,
 					NLS.bind("R Console launch type ''{0}'' is not available.", type), null ));

@@ -44,8 +44,8 @@ public class RConsoleLaunching {
 	public static final String REMOTE_RJS = "remote.rjs-rmi"; //$NON-NLS-1$
 	public static final String REMOTE_RJS_RECONNECT = "remote.rjs-rmi-reconnect"; //$NON-NLS-1$
 	public static final String REMOTE_RJS_SSH = "remote.rjs-rmi.ssh"; //$NON-NLS-1$
-	
-	
+	public static final String RENJIN = "renjin"; //$//$NON-NLS-1$
+
 	static final String ATTR_ROOT = "de.walware.statet.r.debug/RConsole/"; //$NON-NLS-1$
 	
 	/**

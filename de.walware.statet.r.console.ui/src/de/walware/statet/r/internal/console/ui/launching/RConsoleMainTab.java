@@ -132,6 +132,8 @@ public class RConsoleMainTab extends LaunchConfigTabWithDbc {
 		final List<RConsoleType> types = new ArrayList<RConsoleType>();
 		types.add(new RConsoleType("RJ (default)", RConsoleLaunching.LOCAL_RJS, true, true)); //$NON-NLS-1$
 		types.add(new RConsoleType("Rterm", RConsoleLaunching.LOCAL_RTERM, false, false)); //$NON-NLS-1$
+		types.add(new RConsoleType("Renjin", RConsoleLaunching.RENJIN, false, false)); //$NON-NLS-1$
+
 		return types.toArray(new RConsoleType[types.size()]);
 	}
 	
