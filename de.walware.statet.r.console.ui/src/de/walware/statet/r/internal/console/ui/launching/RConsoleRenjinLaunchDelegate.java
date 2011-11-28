@@ -33,6 +33,7 @@ import de.walware.statet.r.console.ui.launching.RConsoleLaunching;
 import de.walware.statet.r.core.renv.IREnvConfiguration;
 import de.walware.statet.r.launching.core.RLaunching;
 import de.walware.statet.r.launching.ui.REnvTab;
+import de.walware.statet.r.nico.RWorkspaceConfig;
 import de.walware.statet.r.nico.impl.RenjinController;
 
 
@@ -126,7 +127,8 @@ public class RConsoleRenjinLaunchDelegate {
 				timestamp );
 //		process.setAttribute(IProcess.ATTR_CMDLINE, LaunchConfigUtil.generateCommandLine(cmdLine));
 //		
-		final RenjinController controller = new RenjinController(process,null);
+		final RenjinController controller = new RenjinController(process,
+				createWorkspaceConfig(configuration),null);
 		process.init(controller);
 		RConsoleLaunching.registerDefaultHandlerTo(controller);
 		
@@ -143,6 +145,13 @@ public class RConsoleRenjinLaunchDelegate {
 		if (monitor != null) {
 			monitor.done();
 		}
+	}
+	
+	static RWorkspaceConfig createWorkspaceConfig(final ILaunchConfiguration configuration) throws CoreException {
+		final RWorkspaceConfig config = new RWorkspaceConfig();
+		config.setEnableObjectDB(configuration.getAttribute(RConsoleLaunching.ATTR_OBJECTDB_ENABLED, true));
+		config.setEnableAutoRefresh(configuration.getAttribute(RConsoleLaunching.ATTR_OBJECTDB_AUTOREFRESH_ENABLED, true));
+		return config;
 	}
 
 }

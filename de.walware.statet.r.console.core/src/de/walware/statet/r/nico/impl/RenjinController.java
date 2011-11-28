@@ -14,12 +14,18 @@ package de.walware.statet.r.nico.impl;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.PrintWriter;
+import java.io.Writer;
 import java.util.Map;
 
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 
 import de.walware.ecommons.ts.IToolRunnable;
+
+import de.walware.statet.nico.core.runtime.SubmitType;
+
+import r.lang.Symbol;
 
 import de.walware.rj.data.RObject;
 import de.walware.rj.data.RReference;
@@ -32,7 +38,9 @@ import r.lang.SEXP;
 import r.parser.RParser;
 
 import de.walware.statet.r.console.core.RProcess;
+import de.walware.statet.r.console.core.RWorkspace;
 import de.walware.statet.r.nico.AbstractRController;
+import de.walware.statet.r.nico.RWorkspaceConfig;
 import de.walware.statet.r.nico.impl.renjin.RenjinObjects;
 
 
@@ -47,15 +55,12 @@ public class RenjinController extends AbstractRController {
 	 * @param process
 	 * @param initData
 	 */
-	public RenjinController(RProcess process, Map<String, Object> initData) {
+	public RenjinController(RProcess process, RWorkspaceConfig workspaceConfig, Map<String, Object> initData) {
 		super(process, initData);
+				
 		
-		context = Context.newTopLevelContext();
-		try {
-			context.init();
-		} catch (IOException e) {
-			throw new RuntimeException();
-		}
+		fWorkspaceData = new RWorkspace(this, null,
+			workspaceConfig );
 	}
 
 	public RPlatform getPlatform() {
@@ -70,6 +75,12 @@ public class RenjinController extends AbstractRController {
 		
 	}
 	
+	@Override
+	public RWorkspace getWorkspaceData() {
+		// TODO Auto-generated method stub
+		return super.getWorkspaceData();
+	}
+
 	private SEXP eval(String expression) {
 		ExpressionVector source = RParser.parseSource(expression + "\n");
 		return source.evaluate(context, context.getGlobalEnvironment());
@@ -100,12 +111,14 @@ public class RenjinController extends AbstractRController {
 	public void assignData(String expression, RObject data,
 			IProgressMonitor monitor) throws CoreException {
 		// TODO Auto-generated method stub
+		throw new UnsupportedOperationException();
 		
 	}
 
 	public void uploadFile(InputStream in, long length, String fileName,
 			int options, IProgressMonitor monitor) throws CoreException {
 		// TODO Auto-generated method stub
+		throw new UnsupportedOperationException();
 		
 	}
 
@@ -113,17 +126,18 @@ public class RenjinController extends AbstractRController {
 			IProgressMonitor monitor) throws CoreException {
 		// TODO Auto-generated method stub
 		
+		throw new UnsupportedOperationException();
 	}
 
 	public byte[] downloadFile(String fileName, int options,
 			IProgressMonitor monitor) throws CoreException {
 		// TODO Auto-generated method stub
-		return null;
+		throw new UnsupportedOperationException();
 	}
 
 	public FunctionCall createFunctionCall(String name) throws CoreException {
 		// TODO Auto-generated method stub
-		return null;
+		throw new UnsupportedOperationException();
 	}
 
 	public RGraphicCreator createRGraphicCreator(int options)
@@ -135,14 +149,24 @@ public class RenjinController extends AbstractRController {
 
 	@Override
 	protected IToolRunnable createStartRunnable() {
-		// TODO Auto-generated method stub
-		return null;
+		return new StartRunnable() {
+			@Override
+			public String getLabel() {
+				return "Initializing Renjin Context...";
+			}
+		};
 	}
 
 	@Override
 	protected void startToolL(IProgressMonitor monitor) throws CoreException {
-		// TODO Auto-generated method stub
-		
+		try {
+			context = Context.newTopLevelContext();
+			context.getGlobals().setStdOut(new PrintWriter(new ToolWriter()));
+			context.init();
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new RuntimeException(e);
+		}		
 	}
 
 	@Override
@@ -158,7 +182,30 @@ public class RenjinController extends AbstractRController {
 
 	@Override
 	protected void doSubmitL(IProgressMonitor monitor) throws CoreException {
-		// TODO Auto-generated method stub
+		SEXP result = eval(fCurrentInput);
+		if(!context.getGlobals().isInvisible()) {
+			r.lang.FunctionCall.newCall(Symbol.get("print"), result).evaluate(context, context.getEnvironment());
+		}
+	}
+	
+	private class ToolWriter extends Writer {
+
+		@Override
+		public void close() throws IOException {
+			// TODO Auto-generated method stub
+			
+		}
+
+		@Override
+		public void flush() throws IOException {
+			// TODO Auto-generated method stub
+			
+		}
+
+		@Override
+		public void write(char[] cbuf, int off, int len) throws IOException {
+			fDefaultOutputStream.append(new String(cbuf, off, cbuf.length-off), SubmitType.CONSOLE, 0);
+		}
 		
 	}
 }

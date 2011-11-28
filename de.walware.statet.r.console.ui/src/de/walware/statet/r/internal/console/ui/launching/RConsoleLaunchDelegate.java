@@ -53,6 +53,7 @@ public class RConsoleLaunchDelegate extends AbstractRConsoleLaunchDelegate {
 			}
 			if (type.equals(RConsoleLaunching.RENJIN)) {
 				new RConsoleRenjinLaunchDelegate().launch(configuration, mode, launch, monitor);
+				return;
 			}
 			throw new CoreException(new Status(IStatus.ERROR, RConsoleUIPlugin.PLUGIN_ID,
 					ICommonStatusConstants.LAUNCHCONFIG_ERROR,
